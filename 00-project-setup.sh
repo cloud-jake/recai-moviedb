@@ -15,3 +15,11 @@ gcloud beta billing projects link $PROJECT --billing-account=$BILLING_ACCOUNT
 PROJECT_ID=`gcloud config get-value project`
 
 echo "Project named ${PROJECT} created with project ID of ${PROJECT_ID}"
+
+# Enable Services
+
+gcloud services enable \
+       retail.googleapis.com \
+       bigquery.googleapis.com \
+       bigquerystorage.googleapis.com \
+       storage.googleapis.com --project="${PROJECT}"
