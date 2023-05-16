@@ -101,7 +101,7 @@ bq mk --project_id=${PROJECT} \
     1 as revenue,
     null as tax,
     null as cost,
-    "USD" as currencyCode )
+    "USD" as currencyCode ) AS purchaseTransaction
  FROM `'${PROJECT}'.movielens.ratings`, t
  WHERE rating >= 5' \
 movielens.user_events_purchasecomplete
