@@ -35,4 +35,7 @@ The remaining scripts are optional
 - https://cloud.google.com/retail/docs/movie-rec-tutorial
 
 
-Customizations added for user_events: search, home-page-view, add-to-cart, purchase-complete
+Customizations added for user_events: 
+```
+search, home-page-view, add-to-cart, purchase-complete
+```
