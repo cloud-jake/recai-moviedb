@@ -62,6 +62,7 @@ bq mk --project_id=${PROJECT} \
  SELECT
    CAST(userId AS STRING) AS visitorId,
    "add-to-cart" AS eventType,
+   1 as quantity,
    FORMAT_TIMESTAMP(
      "%Y-%m-%dT%X%Ez",
      TIMESTAMP_SECONDS(CAST(
@@ -73,7 +74,7 @@ bq mk --project_id=${PROJECT} \
  WHERE rating >= 4.5' \
 movielens.user_events_addtocart
 
-# Checkout >=5
+# purchase-complete >=5
 
 bq mk --project_id=${PROJECT} \
  --use_legacy_sql=false \
@@ -89,6 +90,7 @@ bq mk --project_id=${PROJECT} \
  SELECT
    CAST(userId AS STRING) AS visitorId,
    "purchase-complete" AS eventType,
+   1 as quantity,
    FORMAT_TIMESTAMP(
      "%Y-%m-%dT%X%Ez",
      TIMESTAMP_SECONDS(CAST(
