@@ -1,0 +1,157 @@
+[
+    {
+      "name": "eventType",
+      "type": "STRING",
+      "mode": "REQUIRED"
+    },
+    {
+      "name": "visitorId",
+      "type": "STRING",
+      "mode": "REQUIRED"
+    },
+    {
+      "name": "eventTime",
+      "type": "STRING",
+      "mode": "REQUIRED"
+    },
+    {
+      "name": "experimentIds",
+      "type": "STRING",
+      "mode": "REPEATED"
+    },
+    {
+      "name": "attributionToken",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "productDetails",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+        {
+          "name": "product",
+          "type": "RECORD",
+          "mode": "REQUIRED",
+          "fields": [
+            {
+              "name": "id",
+              "type": "STRING",
+              "mode": "REQUIRED"
+            }
+            {
+              "name": "priceInfo",
+              "type": "RECORD",
+              "mode": "NULLABLE",
+              "fields": [
+                {
+                  "name": "price",
+                  "type": "FLOAT",
+                  "mode": "REQUIRED"
+                },
+                {
+                  "name": "originalPrice",
+                  "type": "FLOAT",
+                  "mode": "NULLABLE"
+                },
+                {
+                  "name": "currencyCode",
+                  "type": "STRING",
+                  "mode": "REQUIRED"
+                },
+                {
+                  "name": "cost",
+                  "type": "FLOAT",
+                  "mode": "NULLABLE"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "quantity",
+          "type": "INTEGER",
+          "mode": "REQUIRED"
+        }
+      ]
+    },
+    {
+      "name": "cartId",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "purchaseTransaction",
+      "type": "RECORD",
+      "mode": "REQUIRED",
+      "fields": [
+        {
+          "name": "id",
+          "type": "STRING",
+          "mode": "NULLABLE"
+        },
+        {
+          "name": "revenue",
+          "type": "FLOAT",
+          "mode": "REQUIRED"
+        },
+        {
+          "name": "tax",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+        },
+        {
+          "name": "cost",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+        },
+        {
+          "name": "currencyCode",
+          "type": "STRING",
+          "mode": "REQUIRED"
+        }
+      ]
+    },
+    {
+      "name": "userInfo",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+        {
+          "name": "userId",
+          "type": "STRING",
+          "mode": "NULLABLE"
+        },
+        {
+          "name": "ipAddress",
+          "type": "STRING",
+          "mode": "NULLABLE"
+        },
+        {
+          "name": "userAgent",
+          "type": "STRING",
+          "mode": "NULLABLE"
+        },
+        {
+          "name": "directUserRequest",
+          "type": "BOOLEAN",
+          "mode": "NULLABLE"
+        }
+      ]
+    },
+    {
+      "name": "uri",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "referrerUri",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "pageViewId",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+   ]
