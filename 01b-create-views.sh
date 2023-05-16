@@ -62,14 +62,13 @@ bq mk --project_id=${PROJECT} \
  SELECT
    CAST(userId AS STRING) AS visitorId,
    "add-to-cart" AS eventType,
-   1 as quantity,
    FORMAT_TIMESTAMP(
      "%Y-%m-%dT%X%Ez",
      TIMESTAMP_SECONDS(CAST(
        (t.new_start + (UNIX_SECONDS(time) - t.old_start) *
          (t.new_end - t.new_start) / (t.old_end - t.old_start))
      AS int64))) AS eventTime,
-   [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
+   [STRUCT(STRUCT(movieId AS id) AS product,1 as quantity)] AS productDetails,
  FROM `'${PROJECT}'.movielens.ratings`, t
  WHERE rating >= 4.5' \
 movielens.user_events_addtocart
@@ -90,14 +89,19 @@ bq mk --project_id=${PROJECT} \
  SELECT
    CAST(userId AS STRING) AS visitorId,
    "purchase-complete" AS eventType,
-   1 as quantity,
    FORMAT_TIMESTAMP(
      "%Y-%m-%dT%X%Ez",
      TIMESTAMP_SECONDS(CAST(
        (t.new_start + (UNIX_SECONDS(time) - t.old_start) *
          (t.new_end - t.new_start) / (t.old_end - t.old_start))
      AS int64))) AS eventTime,
-   [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
+   [STRUCT(STRUCT(movieId AS id,STRUCT(1 as price,"USD" as currencyCode) AS priceInfo) AS product,1 as quantity)] AS productDetails,
+   STRUCT(
+    movieId as id,
+    1 as revenue,
+    null as tax,
+    null as cost,
+    "USD" as currencyCode )
  FROM `'${PROJECT}'.movielens.ratings`, t
  WHERE rating >= 5' \
-movielens.user_events_checkout
+movielens.user_events_purchasecomplete
