@@ -13,10 +13,13 @@ bq mk --project_id=${PROJECT} \
  --use_legacy_sql=false \
  --view '
  SELECT
-   CAST(movieId AS string) AS id,
+   CAST(movies.movieId AS string) AS id,
    SUBSTR(title, 0, 128) AS title,
-   SPLIT(genres, "|") AS categories
- FROM `'${PROJECT}'.movielens.movies`' \
+   SPLIT(genres, "|") AS categories,
+   CONCAT("https://www.imdb.com/title/tt",links.imdbId) AS uri
+ FROM `'${PROJECT}'.movielens.movies` movies
+ LEFT JOIN `'${PROJECT}'.movielens.links` links
+ ON movies.movieID = links.movieid' \
 movielens.products
 
 bq mk --project_id=${PROJECT} \
@@ -42,4 +45,57 @@ bq mk --project_id=${PROJECT} \
    [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
  FROM `'${PROJECT}'.movielens.ratings`, t
  WHERE rating >= 4' \
-movielens.user_events
+movielens.user_event
+
+# create add-to-cart for >= 4.5
+bq mk --project_id=${PROJECT} \
+ --use_legacy_sql=false \
+ --view '
+ WITH t AS (
+   SELECT
+     MIN(UNIX_SECONDS(time)) AS old_start,
+     MAX(UNIX_SECONDS(time)) AS old_end,
+     UNIX_SECONDS(TIMESTAMP_SUB(
+       CURRENT_TIMESTAMP(), INTERVAL 90 DAY)) AS new_start,
+     UNIX_SECONDS(CURRENT_TIMESTAMP()) AS new_end
+   FROM `'${PROJECT}'.movielens.ratings`)
+ SELECT
+   CAST(userId AS STRING) AS visitorId,
+   "add-to-cart" AS eventType,
+   FORMAT_TIMESTAMP(
+     "%Y-%m-%dT%X%Ez",
+     TIMESTAMP_SECONDS(CAST(
+       (t.new_start + (UNIX_SECONDS(time) - t.old_start) *
+         (t.new_end - t.new_start) / (t.old_end - t.old_start))
+     AS int64))) AS eventTime,
+   [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
+ FROM `'${PROJECT}'.movielens.ratings`, t
+ WHERE rating >= 4.5' \
+movielens.user_events_addtocart
+
+# Checkout >=5
+
+bq mk --project_id=${PROJECT} \
+ --use_legacy_sql=false \
+ --view '
+ WITH t AS (
+   SELECT
+     MIN(UNIX_SECONDS(time)) AS old_start,
+     MAX(UNIX_SECONDS(time)) AS old_end,
+     UNIX_SECONDS(TIMESTAMP_SUB(
+       CURRENT_TIMESTAMP(), INTERVAL 90 DAY)) AS new_start,
+     UNIX_SECONDS(CURRENT_TIMESTAMP()) AS new_end
+   FROM `'${PROJECT}'.movielens.ratings`)
+ SELECT
+   CAST(userId AS STRING) AS visitorId,
+   "purchase-complete" AS eventType,
+   FORMAT_TIMESTAMP(
+     "%Y-%m-%dT%X%Ez",
+     TIMESTAMP_SECONDS(CAST(
+       (t.new_start + (UNIX_SECONDS(time) - t.old_start) *
+         (t.new_end - t.new_start) / (t.old_end - t.old_start))
+     AS int64))) AS eventTime,
+   [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
+ FROM `'${PROJECT}'.movielens.ratings`, t
+ WHERE rating >= 5' \
+movielens.user_events_checkout
