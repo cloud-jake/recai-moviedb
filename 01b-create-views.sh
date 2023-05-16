@@ -45,7 +45,7 @@ bq mk --project_id=${PROJECT} \
    [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
  FROM `'${PROJECT}'.movielens.ratings`, t
  WHERE rating >= 4' \
-movielens.user_event
+movielens.user_event_detailpageview
 
 # create add-to-cart for >= 4.5
 bq mk --project_id=${PROJECT} \
