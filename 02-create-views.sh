@@ -60,7 +60,7 @@ WITH t AS (
      UNIX_SECONDS(TIMESTAMP_SUB(
        CURRENT_TIMESTAMP(), INTERVAL 90 DAY)) AS new_start,
      UNIX_SECONDS(CURRENT_TIMESTAMP()) AS new_end
-   FROM `'${PROJECT}'.movielens.ratings`)
+   FROM `temp-medium-recai052023.movielens.ratings`)
  SELECT
    CAST(userId AS STRING) AS visitorId,
    "search" AS eventType,
@@ -70,8 +70,13 @@ WITH t AS (
        (t.new_start + (UNIX_SECONDS(time) - t.old_start) *
          (t.new_end - t.new_start) / (t.old_end - t.old_start))
      AS int64))) AS eventTime,
-   [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
- FROM `'${PROJECT}'.movielens.ratings`, t
+   [STRUCT(STRUCT(r.movieId AS id) AS product)] AS productDetails,
+   STRUCT(  GENERATE_UUID() AS completionAttributionToken, 
+            CONCAT("https://www.imdb.com/title/tt",links.imdbId) AS selectedSuggestion, 
+            0 as selectedPosition) AS completionDetail
+ FROM `temp-medium-recai052023.movielens.ratings` r, t
+ LEFT JOIN `temp-medium-recai052023.movielens.links` links 
+ ON links.movieId = r.movieId
  WHERE rating >= 2' \
 movielens.user_events_search
 
