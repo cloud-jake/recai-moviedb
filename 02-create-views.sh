@@ -47,8 +47,33 @@ bq mk --project_id=${PROJECT} \
    [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
  FROM `'${PROJECT}'.movielens.ratings`, t
  WHERE rating >= 0' \
-movielens.user_event_homepageview
+movielens.user_events_homepageview
 
+# user_events - search - >=3.0
+bq mk --project_id=${PROJECT} \
+ --use_legacy_sql=false \
+ --view '-- Search Event
+WITH t AS (
+   SELECT
+     MIN(UNIX_SECONDS(time)) AS old_start,
+     MAX(UNIX_SECONDS(time)) AS old_end,
+     UNIX_SECONDS(TIMESTAMP_SUB(
+       CURRENT_TIMESTAMP(), INTERVAL 90 DAY)) AS new_start,
+     UNIX_SECONDS(CURRENT_TIMESTAMP()) AS new_end
+   FROM `'${PROJECT}'.movielens.ratings`)
+ SELECT
+   CAST(userId AS STRING) AS visitorId,
+   "search" AS eventType,
+   FORMAT_TIMESTAMP(
+     "%Y-%m-%dT%X%Ez",
+     TIMESTAMP_SECONDS(CAST(
+       (t.new_start + (UNIX_SECONDS(time) - t.old_start) *
+         (t.new_end - t.new_start) / (t.old_end - t.old_start))
+     AS int64))) AS eventTime,
+   [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
+ FROM `'${PROJECT}'.movielens.ratings`, t
+ WHERE rating >= 2' \
+movielens.user_events_search
 
 # user_events - detail-page-view - >=4.0
 bq mk --project_id=${PROJECT} \
@@ -74,7 +99,7 @@ bq mk --project_id=${PROJECT} \
    [STRUCT(STRUCT(movieId AS id) AS product)] AS productDetails,
  FROM `'${PROJECT}'.movielens.ratings`, t
  WHERE rating >= 4' \
-movielens.user_event_detailpageview
+movielens.user_events_detailpageview
 
 # create add-to-cart for >= 4.5
 bq mk --project_id=${PROJECT} \
