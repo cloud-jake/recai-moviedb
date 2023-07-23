@@ -70,6 +70,7 @@ WITH t AS (
        (t.new_start + (UNIX_SECONDS(time) - t.old_start) *
          (t.new_end - t.new_start) / (t.old_end - t.old_start))
      AS int64))) AS eventTime,
+     regexp_extract(title, r'^[^()]*') as searchQuery,
    [STRUCT(STRUCT(r.movieId AS id) AS product)] AS productDetails,
    STRUCT(  GENERATE_UUID() AS completionAttributionToken, 
             CONCAT("https://www.imdb.com/title/tt",links.imdbId) AS selectedSuggestion, 
@@ -77,6 +78,8 @@ WITH t AS (
  FROM `temp-medium-recai052023.movielens.ratings` r, t
  LEFT JOIN `temp-medium-recai052023.movielens.links` links 
  ON links.movieId = r.movieId
+ LEFT JOIN `temp-medium-recai052023.movielens.movies` movies
+ ON movies.movieId = r.movieId
  WHERE rating >= 2' \
 movielens.user_events_search
 
