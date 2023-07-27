@@ -11,7 +11,7 @@ PROJECT_NUM=`gcloud projects describe $PROJECT_ID --format="value(projectNumber)
 
 # Create BQ Dataset
 # bq command to create a dataset ${EXPORT_DATASET} in Project $PROJECT_ID
-bq mk --dataset ${EXPORT_DATASET} --project_id ${PROJECT_ID}
+bq mk --project_id ${PROJECT_ID} --dataset ${EXPORT_DATASET} 
 
 
 
