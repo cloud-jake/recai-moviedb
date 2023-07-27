@@ -48,8 +48,8 @@ SELECT
   SUM(d.quantity*d.product.price_info.price) as product_total,
   COUNT(d) AS basket_size
 FROM `'${PROJECT_ID}'.'${EXPORT_DATASET}'.table_retail_user_events`, UNNEST(product_details) d
-WHERE event_type = 'purchase-complete'
-GROUP BY EXTRACT(DATE FROM event_time), session_id;
+WHERE event_type = "purchase-complete"
+GROUP BY EXTRACT(DATE FROM event_time), session_id;'
 
 
 
