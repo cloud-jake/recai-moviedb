@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#TODO: 
+# - update the export commands to use a Service Account
+# - format the export commands to use scheduler
+
+
 source variables.inc
 
 #Temp fix
