@@ -17,8 +17,8 @@ source variables.inc
 
 
 bq query --use_legacy_sql=false \
-'CREATE OR REPLACE TABLE `'${PROJECT_ID}':'${EXPORT_DATASET}'.table_retail_user_events` 
-AS SELECT * FROM `'${PROJECT_ID}':'${EXPORT_DATASET}'.'${EXPORT_PREFIX}'_retail_user_events`'
+'CREATE OR REPLACE TABLE `'${PROJECT_ID}'.'${EXPORT_DATASET}'.table_retail_user_events` 
+AS SELECT * FROM `'${PROJECT_ID}'.'${EXPORT_DATASET}'.'${EXPORT_PREFIX}'_retail_user_events`'
 
 
 
@@ -28,7 +28,7 @@ AS SELECT * FROM `'${PROJECT_ID}':'${EXPORT_DATASET}'.'${EXPORT_PREFIX}'_retail_
 
 
 bq query --use_legacy_sql=false \
-'CREATE MATERIALIZED VIEW `'${PROJECT_ID}':'${EXPORT_DATASET}'.mv_sales` 
+'CREATE MATERIALIZED VIEW `'${PROJECT_ID}'.'${EXPORT_DATASET}'.mv_sales` 
 OPTIONS(
   friendly_name="Sales View",
   description="View of Sales Data",
@@ -47,7 +47,7 @@ SELECT
   MAX(purchase_transaction.currency_code) as tx_cur,
   SUM(d.quantity*d.product.price_info.price) as product_total,
   COUNT(d) AS basket_size
-FROM `'${PROJECT_ID}':'${EXPORT_DATASET}'.table_retail_user_events`, UNNEST(product_details) d
+FROM `'${PROJECT_ID}'.'${EXPORT_DATASET}'.table_retail_user_events`, UNNEST(product_details) d
 WHERE event_type = 'purchase-complete'
 GROUP BY EXTRACT(DATE FROM event_time), session_id;
 
