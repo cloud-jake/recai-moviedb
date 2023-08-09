@@ -39,3 +39,6 @@ Customizations added for user_events:
 ```
 search, home-page-view, add-to-cart, purchase-complete
 ```
+
+### Walkthrough on Medium
+https://medium.com/google-cloud/test-drive-google-discovery-ai-e0692be59248
